@@ -92,6 +92,5 @@ if __name__ == "__main__":
     obo_objects = parse_obo(args.filename)
     for stanza_type in obo_objects[1:-1]: #ignore header
         print len(stanza_type)
-        for stanza in stanza_type:
-            stanza_counter += 1
+        stanza_counter += len(stanza_type)
     print "Found %d objects" % stanza_counter

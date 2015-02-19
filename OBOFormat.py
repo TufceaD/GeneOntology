@@ -37,15 +37,12 @@ class Header:
                                   'remark']
 
 class Stanza:
-    tags = {}
-    type = None
-    required_tags = []
-    optional_tags = []
 
     def __init__(self, type_, key=None, id_value=None):
         self.type = type_
-        self.update_required_tags()
-        self.update_optional_tags()
+        self.tags = {}
+        self.set_required_tags()
+        self.set_optional_tags()
         if key == "id" and Stanza.is_valid_id:
             self.tags[key] = id_value
 
@@ -72,15 +69,17 @@ class Stanza:
             representation += key + ": " + str(val) + "\n"
         return representation
 
-    def update_required_tags(self):
+    def set_required_tags(self):
         if self.type == 'Term':
             self.required_tags = ['id', 'name']
         elif self.type == 'Typedef':
             self.required_tags = ['id', 'name']
         elif self.type == "Instance":
             self.required_tags = ['id', 'name', 'instance_of']
+        else:
+            self.required_tags = ['id', 'name']
 
-    def update_optional_tags(self):
+    def set_optional_tags(self):
         if self.type == 'Term':
             self.optional_tags = ['is_anonymous', 'alt_id', 'def', 'comment', 'subset', 'synonym', 'exact_synonym',
                                   'narrow_synonym', 'broad_synonym', 'xref', 'xref_analog', 'xref_unk', 'is_a',
@@ -96,12 +95,10 @@ class Stanza:
         elif self.type == "Instance":
             self.optional_tags = ['property_value', 'is_anonymous', 'namespace', 'alt_id', 'comment', 'xref', 'synonym',
                                   'is_obsolete', 'replaced_by', 'consider']
+        else:
+            self.optional_tags = []
 
 class Validator():
-    required_tags = []
-    optional_tags = []
-    type = None
-
     def __init__(self, obo_object):
         self.type = obo_object.type
         self.required_tags = obo_object.required_tags
@@ -112,3 +109,7 @@ class ErrorInvalidID(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
+
+def return_stanza(stanza):
+    new_stanza = stanza
+    return stanza
