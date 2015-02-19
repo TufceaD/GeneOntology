@@ -1,5 +1,9 @@
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
 
+gene_ontology_edit.obo.2015-02-01.gz
+gene_ontology_edit.obo.2015-02-01
+
+*.pyc
 *.iml
 
 ## Directory-based project format:
