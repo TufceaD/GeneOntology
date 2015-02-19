@@ -47,10 +47,26 @@ class Stanza(object):
             self.tags[key] = id_value
 
     def add_tag(self, key, val):
-        try:
-            self.tags[key].append(val)
-        except KeyError:
-            self.tags[key] = [val]
+        if not isinstance(val, basestring):
+            try:
+                self.tags[key].extend(val)
+            except TypeError: # If val is not iterable, e.g. a number
+                self.tags[key].append(val)
+            except KeyError: # If key doesn't exist, create it
+                self.tags[key] = val
+        else: # is string-like
+            try:
+                self.tags[key].append(val)
+            except KeyError: # If key doesn't exist, create it
+                self.tags[key] = [val]
+
+    def add_tags(self, tag_dict):
+        for key in tag_dict:
+            Stanza.add_tag(self, key, tag_dict[key])
+
+    def update_tags(self, tag_dict):
+        self.tags = {}
+        Stanza.add_tags(self, tag_dict)
 
     def is_valid_id(tag_id):
         invalid_ids = ["OBO:TYPE", "OBO:TERM", "OBO:TERM_OR_TYPE", "OBO:INSTANCE"]
@@ -65,8 +81,11 @@ class Stanza(object):
         # TODO: print in the proper order according to OBO standard
         representation = "[" + str(self.type) + "]" + "\n"
         for key, val in self.tags.items():
-            for item in val:
-                representation += key + ": " + str(item) + "\n"
+            try:
+                for item in val:
+                    representation += key + ": " + str(item) + "\n"
+            except TypeError:
+                representation += key + ": " + str(val) + "\n"
         return representation
 
     def set_required_tags(self):
@@ -77,7 +96,7 @@ class Stanza(object):
         elif self.type == "Instance":
             self.required_tags = ['id', 'name', 'instance_of']
         else:
-            self.required_tags = ['id', 'name']
+            self.required_tags = ['id']
 
     def set_optional_tags(self):
         if self.type == 'Term':

@@ -79,6 +79,6 @@ if __name__ == "__main__":
     for stanza_type in OBOFormat.supported_stanzas: #ignore header and count all the stanzas
         print stanza_type, len(obo_dump.supported_stanzas[stanza_type])
         stanza_counter += len(obo_dump.supported_stanzas[stanza_type])
-    print 'unsupported', len(obo_dump.supported_stanzas)
-    stanza_counter += len(obo_dump.supported_stanzas)
+    print 'Unsupported', len(obo_dump.unsupported_stanzas)
+    stanza_counter += len(obo_dump.unsupported_stanzas)
     print "Found %d objects" % stanza_counter
