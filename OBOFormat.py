@@ -5,9 +5,9 @@ Classes and methods for the GeneOntology OBO v1.2 format.
 
 __author__ = 'Daniel'
 
-supported_stanzas = ['[Term]', '[Instance]', '[Typedef]']
+supported_stanzas = ['Term', 'Instance', 'Typedef']
 
-class Header:
+class Header(object):
     tags = {}
     type = 'Header'
     required_tags = []
@@ -36,7 +36,7 @@ class Header:
                                   'synonymtypedef', 'idspace', 'default-relationship-id-prefix', 'id-mapping',
                                   'remark']
 
-class Stanza:
+class Stanza(object):
 
     def __init__(self, type_, key=None, id_value=None):
         self.type = type_
@@ -47,11 +47,10 @@ class Stanza:
             self.tags[key] = id_value
 
     def add_tag(self, key, val):
-        if key == "id":
-            if Stanza.is_valid_id:
-                self.tags[key] = val
-        else:
-            self.tags[key] = val
+        try:
+            self.tags[key].append(val)
+        except KeyError:
+            self.tags[key] = [val]
 
     def is_valid_id(tag_id):
         invalid_ids = ["OBO:TYPE", "OBO:TERM", "OBO:TERM_OR_TYPE", "OBO:INSTANCE"]
@@ -64,9 +63,10 @@ class Stanza:
 
     def __repr__(self):
         # TODO: print in the proper order according to OBO standard
-        representation = str(self.type) + "\n"
+        representation = "[" + str(self.type) + "]" + "\n"
         for key, val in self.tags.items():
-            representation += key + ": " + str(val) + "\n"
+            for item in val:
+                representation += key + ": " + str(item) + "\n"
         return representation
 
     def set_required_tags(self):
@@ -98,7 +98,25 @@ class Stanza:
         else:
             self.optional_tags = []
 
-class Validator():
+class OBODump(object):
+    def __init__(self, header=None):
+        self.header = header
+        self.supported_stanzas = {}
+        self.unsupported_stanzas = []
+        for stanza in supported_stanzas:
+            self.supported_stanzas[stanza] = []
+
+    def add_header(self, header):
+        self.header = header
+
+    def add_stanza(self, stanza):
+        if stanza.type in supported_stanzas:
+            self.supported_stanzas[stanza.type].append(stanza)
+        else:
+            self.unsupported_stanzas.append(stanza)
+
+
+class Validator(object):
     def __init__(self, obo_object):
         self.type = obo_object.type
         self.required_tags = obo_object.required_tags
